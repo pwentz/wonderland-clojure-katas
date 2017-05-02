@@ -31,9 +31,14 @@
     (is (= "meetmebythetree"
            (decode "scones" "egsgqwtahuiljgs")))))
 
-; (deftest test-decipher
-;   (testing "can extract the secret keyword given an encrypted message and the original message"
-;     (is (= "vigilance"
-;            (decipher "opkyfipmfmwcvqoklyhxywgeecpvhelzg" "thequickbrownfoxjumpsoveralazydog")))
-;     (is (= "scones"
-;            (decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))))
+(deftest test-assemble-decipher
+  (testing "can take two chars and return the keyword char"
+    (is (= \v
+           (assemble-decipher [\o \t])))))
+
+(deftest test-decipher
+  (testing "can extract the secret keyword given an encrypted message and the original message"
+    (is (= "vigilance"
+           (decipher "opkyfipmfmwcvqoklyhxywgeecpvhelzg" "thequickbrownfoxjumpsoveralazydog")))
+    (is (= "scones"
+           (decipher "hcqxqqtqljmlzhwiivgbsapaiwcenmyu" "packmyboxwithfivedozenliquorjugs")))))

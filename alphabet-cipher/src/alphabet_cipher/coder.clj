@@ -1,12 +1,13 @@
-(ns alphabet-cipher.coder)
+(ns alphabet-cipher.coder
+  (:require [clojure.string :as st]))
 
 (def letter-map
-  {:A 1 :B 2 :C 3 :D 4 :E 5
-   :F 6 :G 7 :H 8 :I 9 :J 10
-   :K 11 :L 12 :M 13 :N 14
-   :O 15 :P 16 :Q 17 :R 18
-   :S 19 :T 20 :U 21 :V 22
-   :W 23 :X 24 :Y 25 :Z 26})
+  {:A 0 :B 1 :C 2 :D 3 :E 4
+   :F 5 :G 6 :H 7 :I 8 :J 9
+   :K 10 :L 11 :M 12 :N 13
+   :O 14 :P 15 :Q 16 :R 17
+   :S 18 :T 19 :U 20 :V 21
+   :W 22 :X 23 :Y 24 :Z 25})
 
 (def chart
   {:A "abcdefghijklmnopqrstuvwxyz"
@@ -39,23 +40,38 @@
 (defn format-keyword [word message]
   (apply str (take (count message) (cycle word))))
 
-(def to-keyword (comp keyword clojure.string/upper-case))
+(def to-keyword (comp keyword st/upper-case))
 
-(def column (comp dec letter-map to-keyword))
+(def column (comp letter-map to-keyword))
 (def row (comp vec chart to-keyword))
+
+(def to-char (comp first st/lower-case name key first))
 
 (defn assemble-encoding [[a b]]
   ((row b) (column a)))
 
 (defn assemble-decoding [[a b]]
-  (let [to-char (comp first seq clojure.string/lower-case name key first)]
-    (to-char
-      (filter #(#{b} ((vec (val %)) (column a))) chart))))
+  (to-char
+    (filter #(#{b} ((vec (val %)) (column a))) chart)))
 
 (defn cipher [f word message]
   (let [kword (format-keyword word message)
-        enc-pairs (map vector kword message)]
-    (apply str (map f enc-pairs))))
+        pairs (map vector kword message)]
+    (apply str (map f pairs))))
+
+(defn assemble-decipher [[a b]]
+  (let [index (.indexOf (row b) a)]
+    (to-char
+      (filter #(#{index} (val %)) letter-map))))
+
+(defn decipher [encrypted original]
+  (let [pairs (map vector encrypted original)
+        repeating-key (map assemble-decipher pairs)]
+    (loop [acc (vec (take 2 repeating-key))
+           keyw (rest (rest repeating-key))]
+      (if (= (take 2 acc) (take 2 keyw))
+        (apply str acc)
+        (recur (conj acc (first keyw)) (rest keyw))))))
 
 (def encode (partial cipher assemble-encoding))
 (def decode (partial cipher assemble-decoding))
