@@ -9,33 +9,13 @@
    :S 18 :T 19 :U 20 :V 21
    :W 22 :X 23 :Y 24 :Z 25})
 
+(def alphabet (take 26 (iterate (comp char inc int) \a)))
+
+(def cycled-alphabet
+  (map #(apply str (drop % (take (+ 26 %) (cycle alphabet)))) (range 26)))
+
 (def chart
-  {:A "abcdefghijklmnopqrstuvwxyz"
-   :B "bcdefghijklmnopqrstuvwxyza"
-   :C "cdefghijklmnopqrstuvwxyzab"
-   :D "defghijklmnopqrstuvwxyzabc"
-   :E "efghijklmnopqrstuvwxyzabcd"
-   :F "fghijklmnopqrstuvwxyzabcde"
-   :G "ghijklmnopqrstuvwxyzabcdef"
-   :H "hijklmnopqrstuvwxyzabcdefg"
-   :I "ijklmnopqrstuvwxyzabcdefgh"
-   :J "jklmnopqrstuvwxyzabcdefghi"
-   :K "klmnopqrstuvwxyzabcdefghij"
-   :L "lmnopqrstuvwxyzabcdefghijk"
-   :M "mnopqrstuvwxyzabcdefghijkl"
-   :N "nopqrstuvwxyzabcdefghijklm"
-   :O "opqrstuvwxyzabcdefghijklmn"
-   :P "pqrstuvwxyzabcdefghijklmno"
-   :Q "qrstuvwxyzabcdefghijklmnop"
-   :R "rstuvwxyzabcdefghijklmnopq"
-   :S "stuvwxyzabcdefghijklmnopqr"
-   :T "tuvwxyzabcdefghijklmnopqrs"
-   :U "uvwxyzabcdefghijklmnopqrst"
-   :V "vwxyzabcdefghijklmnopqrstu"
-   :W "wxyzabcdefghijklmnopqrstuv"
-   :X "xyzabcdefghijklmnopqrstuvw"
-   :Y "yzabcdefghijklmnopqrstuvwx"
-   :Z "zabcdefghijklmnopqrstuvwxy"})
+  (into {} (map vector (map to-keyword alphabet) (do-stuff))))
 
 (defn format-keyword [word message]
   (apply str (take (count message) (cycle word))))
