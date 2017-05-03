@@ -6,8 +6,9 @@
 
 (def cycled-alphabet
   (map
-    #(apply str
-            (drop % (take (+ key-count %) (cycle alphabet))))
+    #(vec
+       (drop %
+             (take (+ key-count %) (cycle alphabet))))
     (range key-count)))
 
 (def chart
@@ -19,16 +20,15 @@
 (defn column [a]
   (.indexOf alphabet a))
 
-(def row (comp vec (partial chart)))
+(def row chart)
 
 (defn encode-char [[a b]]
   ((row b) (column a)))
 
 (defn decode-char [[a b]]
-  (let [first-key (comp key first)
-        vec-val (comp vec val)]
+  (let [first-key (comp key first)]
     (first-key
-      (filter #(#{b} ((vec-val %) (column a))) chart))))
+      (filter #(#{b} ((val %) (column a))) chart))))
 
 (defn cipher [f word message]
   (let [kword (format-keyword word message)
@@ -40,13 +40,12 @@
     (alphabet index)))
 
 (defn decipher [encrypted original]
-  (let [pairs (map vector encrypted original)
-        repeating-key (map decipher-char pairs)]
-    (loop [acc (vec (take 2 repeating-key))
-           keyw (rest (rest repeating-key))]
-      (if (= (take 2 acc) (take 2 keyw))
-        (apply str acc)
-        (recur (conj acc (first keyw)) (rest keyw))))))
+  (let [encrypted-pairs (map vector encrypted original)
+        repeating-key (apply str (map decipher-char encrypted-pairs))
+        identifiers (subs repeating-key 0 2)
+        next-identifiers (.indexOf (subs repeating-key 2) identifiers)
+        restart-point (+ next-identifiers 2)]
+    (subs repeating-key 0 restart-point)))
 
 (def encode (partial cipher encode-char))
 (def decode (partial cipher decode-char))
