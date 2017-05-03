@@ -10,7 +10,7 @@
 (deftest test-assemble-encoding
   (testing "can take two chars and return the intersecting char from chart"
     (is (= \h
-           (assemble-encoding [\v \m])))))
+           (encode-char [\v \m])))))
 
 (deftest test-encode
   (testing "can encode given a secret keyword"
@@ -22,7 +22,7 @@
 (deftest test-assemble-decoding
   (testing "can take two chars and return the reverse-intersecting char"
     (is (= \m
-           (assemble-decoding [\v \h])))))
+           (decode-char [\v \h])))))
 
 (deftest test-decode
   (testing "can decode an cyrpted message given a secret keyword"
@@ -34,7 +34,7 @@
 (deftest test-assemble-decipher
   (testing "can take two chars and return the keyword char"
     (is (= \v
-           (assemble-decipher [\o \t])))))
+           (decipher-char [\o \t])))))
 
 (deftest test-decipher
   (testing "can extract the secret keyword given an encrypted message and the original message"
